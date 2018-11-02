@@ -7,7 +7,7 @@ lw   $7, P
 lw   $8, Q
 addi $9, $0, 1        		# $9 = 1
 add  $10, $0, $0		# $10 = 0 = counter N = exponent
-Mult6:	andi $10, $7, 1		# $10 = $7 and 1 (0/1)
+Base6:	andi $10, $7, 1		# $10 = $7 and 1 (0/1)
 	srl  $7, $7, 1		# $7 >> 1
 	beq  $10, $0, Mult2	# if zero, go to Mult2 
 	add  $10, $9, $9        # temp $10 = $9 + $9 = $ 10 = 2
@@ -16,16 +16,16 @@ Mult6:	andi $10, $7, 1		# $10 = $7 and 1 (0/1)
         add  $9, $10, $9        # $9 =  $10 + $9 = $9 = 6
 Mult2:	andi $10, $7, 1		# $10 = $7 and 1 (0/1)
 	srl  $7, $7, 1		# $7 >> 1
-	beq  $10, $0, Mult4	# if zero, go to Mult2 
+	beq  $10, $0, Mult4	# if zero, go to Mult4 
 	add  $9, $9, $9	       # $9 = $9 + $9 = 2x$9                 10      	        
 Mult4:	andi $10, $7, 1		# $10 = $7 and 1 (0/1)
 	srl  $7, $7, 1		# $7 >> 1
-	beq  $10, $0, Mult16	# if zero, go to Mult2 
+	beq  $10, $0, Mult16	# if zero, go to Mult16 
 	add  $9, $9, $9	       # $9 = $9 + $9 = 2x$9
 	add  $9, $9, $9	       # $9 = $9 + $9 = 4x$9       	
 Mult16: andi $10, $7, 1		# $10 = $7 and 1 (0/1)
 	srl  $7, $7, 1		# $7 >> 1
-	beq  $10, $0, Mod	# if zero, go to Mult2 
+	beq  $10, $0, Mod	# if zero, go Mod 
 	add  $9, $9, $9		# $9 = $9 + $9
 	add  $9, $9, $9		# $9 = $9 + $9
 	add  $9, $9, $9		# $9 = $9 + $9	

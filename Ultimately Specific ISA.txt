@@ -1,0 +1,141 @@
+Our ISA is called "Ultimately Specific". It is designed based on the number of different instructions we have. We have a total of X different instructions represented
+by their decimal value from 0-127. The philosophy behind this idea is create the most simplest and easiest ISA creatable to our knowledge. The only way to decipher the instruction
+is to find its decimal value and figure it out from the table. We have a total of 128 possible different instructions so reusing instructions within each program is encouraged. This
+design is based off our previous project ISA that encouraged as little code lines as possible. This would increase efficiency within the code and decrease computation time. The cost
+of such design is the complexity of our harware implementation. As of now, we only have part 1 working and have only filled 17 different options. For now, we will not arrange instruction
+alphabetically to further increase the simlplicity of the machine code and Python. In other words, as the PC instruction value increases, so do the Decimal/Binary values.
+
+
+
+Dec.	Binary/Machine coil	Instruction	Description	
+0	0000000			lw   $7, P		
+1	0000001			lw   $8, Q		
+2	0000010			addi $9, $0, 1        	# $9 = 1	
+3	0000011			add  $10, $0, $0	# $10 = 0 = counter N = exponent	
+4	0000100			andi $10, $7, 1		# $10 = $7 and 1 (0/1), 
+5	0000101			srl  $7, $7, 1		# $7 >> 1	
+6	0000110			beq  $10, $0, Mult2	# if zero, go to Mult2, else create base 6	
+7	0000111			add  $10, $9, $9   	# temp $10 = $9 + $9 = $ 10 = 2	
+8	0001000			add  $9, $9, $9		# $9 = $9 + $9 = $9 = 2	
+9	0001001			add  $9, $10, $9        # $9 =  $10 + $9 = $9 = 6	
+10	0001010			beq  $10, $0, Mult4	# if zero, go to Mult4,  else multiply by 2	
+11	0001011			beq  $10, $0, Mult16	# if zero, go to Mult16, else check to mult by 4	
+12	0001100			beq  $10, $0, Mod	# if zero, go to Mod, else mult by 16
+13	0001101			slt  $10, $9, $8      	# if $9 < $8, $10 = 1, else $10 = 0, these next 3 lines will subtract by 17 until the is only the remainder	
+14	0001110			bne  $10, $0, End  	# if($10 =1) Save2, else cont          	
+15	0001111			sub  $9, $9, $8 	# $16 = $16 -17 = 36 -17 = 19	
+16	0010000			j    Mod		# Will loop back to Mod to get remainder  	
+17	0010001			sw   $9, R		# Stores the remainder value into R	
+18	0010010			
+19	0010011			
+20	0010100			
+21	0010101			
+22	0010110			
+23	0010111			
+24	0011000			
+25	0011001			
+26	0011010			
+27	0011011			
+28	0011100			
+29	0011101			
+30	0011110			
+31	0011111			
+32	0100000			
+33	0100001			
+34	0100010			
+35	0100011			
+36	0100100			
+37	0100101			
+38	0100110			
+39	0100111			
+40	0101000			
+41	0101001			
+42	0101010			
+43	0101011			
+44	0101100			
+45	0101101			
+46	0101110			
+47	0101111			
+48	0110000			
+49	0110001			
+50	0110010			
+51	0110011			
+52	0110100			
+53	0110101			
+54	0110110			
+55	0110111			
+56	0111000			
+57	0111001			
+58	0111010			
+59	0111011			
+60	0111100			
+61	0111101			
+62	0111110			
+63	0111111			
+64	1000000			
+65	1000001			
+66	1000010			
+67	1000011			
+68	1000100			
+69	1000101			
+70	1000110			
+71	1000111			
+72	1001000			
+73	1001001			
+74	1001010			
+75	1001011			
+76	1001100			
+77	1001101			
+78	1001110			
+79	1001111			
+80	1010000			
+81	1010001			
+82	1010010			
+83	1010011			
+84	1010100			
+85	1010101			
+86	1010110			
+87	1010111			
+88	1011000			
+89	1011001			
+90	1011010			
+91	1011011			
+92	1011100			
+93	1011101			
+94	1011110			
+95	1011111			
+96	1100000			
+97	1100001			
+98	1100010			
+99	1100011			
+100	1100100			
+101	1100101			
+102	1100110			
+103	1100111			
+104	1101000			
+105	1101001			
+106	1101010			
+107	1101011			
+108	1101100			
+109	1101101			
+110	1101110			
+111	1101111			
+112	1110000			
+113	1110001			
+114	1110010			
+115	1110011			
+116	1110100			
+117	1110101			
+118	1110110			
+119	1110111			
+120	1111000			
+121	1111001			
+122	1111010			
+123	1111011			
+124	1111100			
+125	1111101			
+126	1111110			
+127	1111111			
+				
+				
+ 
