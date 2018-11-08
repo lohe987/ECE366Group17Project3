@@ -1,0 +1,41 @@
+addi $8, $0, 1
+addi $12, $0, 0x2000			Load the data address in $12 useful for loading operands
+sw  $8, 4($12)			it saves 1 in the result because if the exponent is 0
+addi $10, $0, 6			constant 6 is loaded into register 10
+lw  $15, 0($12)			the exponent is loaded into 15
+addi $12, $0, 17			We load a 17 for the modulus
+beq  $15, $0, ExponentZero
+andi $11, $15, 1			If not: it gets lowest bit value by andi operation between $15 and 1
+beq  $11, $0, Continue
+add $14, $8, $0
+add $13, $10, $0
+jal Multiplication
+add $8, $18,$0
+add $14, $10, $0			the base is elevated to the power of two
+add $13, $10, $0
+jal Multiplication
+add $10, $18, $0			We add the result of the hamming count. If it's zero, then nothing happens
+jal Modulus
+srl $15, $15, 1			it advances to the next bit
+j MainLoop			Jump to Mainloop
+addi $18, $0, 0
+beq  $14, $0, ReturnToPrevious			If one Operand is zero we return, since the result is zero
+beq  $13, $0, ReturnToPrevious			If one Operand is zero we return, since the result is zero
+add $18, $18, $14			We add the value $14 to the register $18
+addi $13, $13, -1
+j SecondaryLoop			We keep going until $13 is zero
+add $10, $0, $8			To calculate the modulus 17 we make succesive substractions
+jal Modulus
+addi $15, $0, 0x2004			We store the address to which the result shall be saved in the register $15
+sw  $10, 0($15)			We save the result
+j EXIT
+add $10, $0, $8			To calculate the modulus 17 we make succesive substractions
+jal Modulus
+addi $15, $0, 0x2004			We store the address to which the result shall be saved in the register $15
+sw  $10, 0($15)			We save the result
+j EXIT
+jr  $31
+slt $11, $10, $12			If we found out that the number is already lower thant seventeen, then we're done
+bne $11, $0, ReturnToPrevious
+addi $10, $10, -17
+j Modulus			Keep calculating modulus
