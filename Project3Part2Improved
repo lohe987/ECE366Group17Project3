@@ -1,0 +1,30 @@
+addi	$5  $0, 0		# Counter for Array 
+addi	$7  $0, 0		# Counter for bit #
+Start:		addi	$6  $0, 400		# stop value of array
+		beq	$5, $6, Exit		# if $5 = 400, Exit program
+		lw	$1, 0xC($0)		# $1 = T = Value to compare to / first Anded value
+		lw	$2, 0x2020($5)		# $2 = mem(0x2020 + $5)
+		addi	$5, $5, 4		# Increment $5 for next array index	
+		and	$1, $1, $2		# $1 = $1 and $2 = T and Array(i) = Anded value , gets rid of T during this loop to save on registers	
+Compare:	addi	$8  $0, 16		# stop value for bit #
+		beq	$7, $8, Save		# Once $7 equals 16, go to next array index
+		addi	$7, $7, 1		# Increment $7 by 1
+		andi	$2, $1, 1		# $2 = $1 and 1 = Anded value and 1, $2 is temp value	
+		add	$3, $3, $2		# counts # of 1s in $1
+		srl	$1, $1, 1
+		j	Compare					
+Save:		lw	$1, 0x2010($0)
+		lw	$2, 0x2014($0)
+		slt	$6, $1, $3
+		beq 	$6, $0, Check1
+		add	$1, $0, $3
+		addi	$2, $0, 1
+		sw	$1, 0x2010($0)
+		sw	$2, 0x2014($0)
+		j	Start
+Check1:		beq	$1, $3, Check2
+		j	Start		
+Check2:		addi	$2, $2, 1
+		sw	$2, 0x2014
+		j	Start		
+Exit:
