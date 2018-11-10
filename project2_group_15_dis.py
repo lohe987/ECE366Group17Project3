@@ -1,7 +1,7 @@
 # Disassembler for project 2
 #This code works for both program 1 and 2
 
-input_file = open("project2_group_15_p1_bin.txt.txt", "r")
+input_file = open("P1.txt", "r")
 output_file = open("project2_group_15_p1_asm.txt", "w")
 
 for line in input_file:
