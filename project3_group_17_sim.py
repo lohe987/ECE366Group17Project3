@@ -107,11 +107,12 @@ def disassembler(I, lines, mode):
         else:
             output_file.write("Instructions not supported\n")
         
-def simulate(Instructions,Memory,Nlines,Memlines):
+def simulate(I,Memory,Nlines,program):
     print("Project 3  Group 17 Ulitmately Simple: Simulator")
     PC = 0 #program counter
     DIC= 0 #dynamic instruction counter
     Reg = [0,0,0,0,0,0,0,0,0,0,0] # intializing all ten registers to zero, reg[0] is $0
+    Mem = 8; # Where the memory for the  arrays starts
    # Memory = [0 for i in range(10)] # data memory, 
     print("********** Simluation starts **********")
    # finished = False
@@ -120,10 +121,11 @@ def simulate(Instructions,Memory,Nlines,Memlines):
      #   DIC += 1
       #  print(fetch)
     if (program == 1):
-        max = 32 #When it will stop running the program for P1
+        max = 31 #When it will stop running the program for P1
     else:
-        max = 30 # When it will stop running the program for P2
-    while(PC < max):  #will need to be edited later
+        max = 32 # When it will stop running the program for P2
+    while(PC < max):  # Based on the program length its the max pc can run
+        line=I[PC]
         if(line[0:8] == "00000000"):
             #output_file.write("lw $7, P            #$7 = P \n")
             Reg[7] = int(Memory[0])
@@ -142,13 +144,14 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             Reg[10] = Reg[7] + 1
             PC += 1
         elif(line[0:8] == "00001001"):
-            output_file.write("srl $7, $7, 1       # $7 >>1 \n")
+            #output_file.write("srl $7, $7, 1       # $7 >>1 \n")
             Reg[7] = Reg[7] >> 1
-           
+            PC +=1
+            
         elif(line[0:8] == "00001010"):
-            output_file.write("beq $10, $0, Mult2  # if zero go to Mult2")
+            #output_file.write("beq $10, $0, Mult2  # if zero go to Mult2")
             if(Reg[10] == Reg[0]):
-                PC = 11
+                PC = 12 #PC 11 should be Mult2
             else:
                 PC += 1
                 
@@ -164,24 +167,25 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             #output_file.write("add $9, $10, $9     # $9 = $10 +$9 = $9 = 6\n")
             Reg[9] = Reg[10]+ Reg[9]
             PC += 1
+            
         elif(line[0:8] == "00010010"):
             #output_file.write("beq $10, $0, Mult4  # $if zero, go Mult2, check to multiply next bit by 4, else multiply by 2\n")
             if(Reg[10] == Reg[0]):
-                PC = 15
+                PC = 16 # Mult4 should be PC 15
             else:
                 PC += 1
                 
         elif(line[0:8] == "00010100"):
             #output_file.write("beq $10, $0, Mult16  # $if zero, go Mult2, check to multiply next bit by 16, else MOD")
-             if(Reg[10] == Reg[0]):
-                PC = 20
+            if(Reg[10] == Reg[0]):
+                PC = 21 #PC Mult16
             else:
                 PC += 1
                 
         elif(line[0:8] == "00010111"):
-            #output_file.write("beq $10, $0, Mod     # $if zero, go Mult2, check yo multiply next bit by 4, else multiply by 2\n")
-             if(Reg[10] == Reg[0]):
-                PC = 27
+            #output_file.write("beq $10, $0, Mod     # $if zero, go Mult2, check to multiply next bit by 4, else multiply by 2\n")
+            if(Reg[10] == Reg[0]):
+                PC = 28 #PC for MOD
             else:
                 PC += 1
                 
@@ -191,13 +195,14 @@ def simulate(Instructions,Memory,Nlines,Memlines):
                 Reg[10] = 1
             else:
                 Reg[10]= 0
-                PC += 1
                 
-        elif(line[0:8] == "00011011"):
-            output_file.write("bne $10, $0, End     # if($10 = 1) Save2, else cont\n")
-            if( Reg[10] != 1):
+            PC += 1
+                
+        elif(line[0:8] == "00011011"): #PC 28
+            #output_file.write("bne $10, $0, End     # if($10 = 1) Save2, else cont\n")
+            if( Reg[10] == 1): # or 10 != 0
                 #PC = What ever "Save2"s 
-                PC = 31
+                PC = 32 # should excute instruction with PC 31 then end
             else:
                 PC += 1
                 
@@ -208,11 +213,11 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             
         elif(line[0:8] == "00011110"):
             #output_file.write("j Mod	            # Will loop back to Mod to get remainder  \n")
-            PC= 27
+            PC= 28 # PC for MOD
             
         elif(line[0:8] == "00100001"):
             #output_file.write("sw $9, R	            #Stores the remainder value into R\n")
-    #        Memory[2] = Reg[9] #Memory[2] is R (result) !!Memory is a string not a int
+            Memory[2] = str(Reg[9]) #Memory[2] is R (result) !!Memory is a string not a int
             PC += 1
         
         elif(line[0:8] == "00100010"):
@@ -230,16 +235,19 @@ def simulate(Instructions,Memory,Nlines,Memlines):
         elif(line[0:8] == "00101000"):
             #output_file.write("beq  $5, $6, Exit	# if $5 = 400, Exit program\n")
             if (Reg[5] == 400):
-                PC = 30
+                PC = 31
             else:
                 PC += 1
                 
         elif(line[0:8] == "00101011"):
             #output_file.write("lw   $1, 0xC($0)	# $1 = T = Value to compare to / first Anded value\n")
-            Reg[1] = Memory[3]
+            Reg[1] = int(Memory[3])
             PC += 1
         elif(line[0:8] == "00101101"):
-            output_file.write("lw   $2, 0x2020($5)	# $2 = mem(0x2020 + $5)\n")
+            #output_file.write("lw   $2, 0x2020($5)	# $2 = mem(0x2020 + $5)\n")
+            Reg[2] = int(Memory[mem +Reg[5]])
+            PC +=1
+            
         elif(line[0:8] == "00101110"):
             #output_file.write("addi $5, $5, 4	    # Increment $5 for next array index\n")
             Reg[5] = Reg[5]+ 1  #array index is only by one using python
@@ -256,12 +264,11 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             PC += 1
             
         elif(line[0:8] == "00110101"):
-            output_file.write("beq  $7, $8, Save	# Once $7 equals 16, go to next array index\n")
+            #output_file.write("beq  $7, $8, Save	# Once $7 equals 16, go to next array index\n")
             if( Reg[7] == Reg[8]):
                 #PC = what ever "Save" is
-                PC= 16
+                PC= 17
             else:
-                #go to next value in the array
                 PC += 1
                 
         elif(line[0:8] == "00110110"):
@@ -278,22 +285,38 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             PC += 1
         elif(line[0:8] == "00111100"):
             #output_file.write("srl  $1, $1, 1	# $1 = $1 >> 1, reduces it by 1 bit till = 0\n")
-            Reg[1] = Reg[1]
+            Reg[1] = Reg[1] >> 1
+            PC +=1
+            
         elif(line[0:8] == "00111111"):
             #output_file.write("j    Compare	    # now Compare with old values\n")
             PC = 9
             
         elif(line[0:8] == "01000001"):
-            output_file.write("lw   $1, 0x2010($0)	# reuse $1 = S\n")
+            #output_file.write("lw   $1, 0x2010($0)	# reuse $1 = S\n")
+            Reg[1] = int(Memory[4])
+            PC += 1
             
         elif(line[0:8] == "01000010"):
-            output_file.write("lw   $2, 0x2014($0)	# reuse $2 = C\n")
+            #output_file.write("lw   $2, 0x2014($0)	# reuse $2 = C\n")
+            Reg[2] = int(Memory[5])
+            PC += 1
             
         elif(line[0:8] == "01000100"):
-            output_file.write("slt  $6, $1, $3	# $6 = 1 if( $1(S) < $3), else $6 = 0\n")
+            #output_file.write("slt  $6, $1, $3	# $6 = 1 if( $1(S) < $3), else $6 = 0\n")
+            if (Reg[1] < Reg[3]):
+                Reg[6] = 1
+            else:
+                Reg[6] = 0
+            PC +=1
             
         elif(line[0:8] == "01000111"):
-            output_file.write("beq  $6, $0, Check1	# if (s>= $3 then $6 = 0) => if ($6 = 0) go to check 1, else continue\n")
+            #output_file.write("beq  $6, $0, Check1	# if (s>= $3 then $6 = 0) => if ($6 = 0) go to check 1, else continue\n")
+            if( Reg[1] >= Reg[3]):
+                Reg[6] = 0
+                PC +=1
+            else:
+                PC = 28
             
         elif(line[0:8] == "01001000"):
             #output_file.write("add  $1, $0, $3	# $1 = $3, $1 will now take highest value\n")
@@ -307,12 +330,12 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             
         elif(line[0:8] == "01001101"):
             #output_file.write("sw   $1, 0x2010($0)	# mem(0x2010) = $1 = S\n")
-            Memory[4] = Reg[1]
+            Memory[4] = str(Reg[1])
             PC += 1
             
         elif(line[0:8] == "01001110"):
             #output_file.write("sw   $2, 0x2014($0)	# mem(0x2014) = $2 = T\n")
-            Memory[5] = Reg[2]
+            Memory[5] = str(Reg[2])
             PC += 1
             
         elif(line[0:8] == "01010000"):
@@ -321,7 +344,7 @@ def simulate(Instructions,Memory,Nlines,Memlines):
         elif(line[0:8] == "01010011"):
             #output_file.write("beq  $1, $3, Check2	# if ($1 = $3) go to check 2, else continue\n")
             if (Reg[1] ==Reg[3]):
-                PC = 27
+                PC = 28
             else:
                 PC += 1
                 
@@ -334,18 +357,20 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             #output_file.write("slt $10, $9, $8 \n")
             if (Reg[9] < Reg[8]):
                 Reg[10] = 1
-            
+            else:
+                Reg[10] = 0
             PC += 1
-        elif(line[0:8] == "01011001"):
+            
+        elif(line[0:8] == "01011001"): #PC 29
             #output_file.write("sub $9, $9, $8 \n")
             Reg[9] = Reg[9] - Reg[8]
-           
             PC += 1
         else:
             #output_file.write("Instructions not supported/n")
             print("instruction not supported")
         DIC+=1
-        
+        print("PC value: ", PC)
+        #print("Instruction[", PC, "]: ", I[PC-1])
     
     print("******** Simulation finished *********")
     print("Dynamic Instr Count: ",DIC)
@@ -442,12 +467,12 @@ def main():
         
                 
     if(mode == 1): #Check whether to use disassembler, assembler or simulator
-        simulate(Instructions,Memory,Nlines,Memlines,1)
-        print("simulation complete for Program 1 /n")
+        simulate(Instructions,Memory,Nlines,1)
+        print("simulation complete for Program 1 \n")
         # needs memory information printed here
         print("**************************************")
-        simulate(Instructions,Memory,Nlines,Memlines,2)
-        print("simulation complete for Program 2 /n")
+        simulate(Instructions,Memory,Mlines,2)
+        print("simulation complete for Program 2 \n")
         # needs memory information printed here
     elif(mode== 2):
         disassembler(Instructions,Nlines,1)
