@@ -118,7 +118,7 @@ def simulate(Instructions,Memory,Nlines,Memlines):
     if(line[0:8] == "00000000"):
             #output_file.write("lw $7, P            #$7 = P \n")
             Reg[7] = int(Memory[0])
-            Reg[8] = int(Memory[1]) # loads Q even thoou its fixed at 17
+            Reg[8] = int(Memory[1]) # loads Q even thou its fixed at 17
             PC += 1             
         elif(line[0:8] == "00000011"):
             #output_file.write("add $9, $0, 1       #$9 = 1\n")
@@ -134,6 +134,7 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             PC += 1
         elif(line[0:8] == "00001001"):
             output_file.write("srl $7, $7, 1       # $7 >>1 \n")
+            Reg[7] = Reg[7] >> = 1
            
         elif(line[0:8] == "00001010"):
             output_file.write("beq $10, $0, Mult2  # if zero go to Mult2")
@@ -156,15 +157,24 @@ def simulate(Instructions,Memory,Nlines,Memlines):
         elif(line[0:8] == "00010111"):
             output_file.write("beq $10, $0, Mod     # $if zero, go Mult2, check yo multiply next bit by 4, else multiply by 2\n")
         elif(line[0:8] == "00011000"):
-            output_file.write("slti $10, $9, 17     # if $9< $8, $10 = 1, else $10 = 0, these next 3 lines will subract by 17 until the is only the remainder\n")
+            #output_file.write("slti $10, $9, 17     # if $9< $8, $10 = 1, else $10 = 0, these next 3 lines will subract by 17 until the is only the remainder\n")
+            if( Reg[9] < Reg[8]):
+                Reg[10] = 1
+            else:
+                Reg[10]= 0
+            PC += 1
+                
         elif(line[0:8] == "00011011"):
             output_file.write("bne $10, $0, End     # if($10 = 1) Save2, else cont\n")
+            if( Reg[10] != 1):
+                #PC = What ever "Save2"s 
         elif(line[0:8] == "00011101"):
             output_file.write("subi  $9, $9, 17 	# $9 = $9 -17 = 36 -17 = 19\n")
             Reg[9] = Reg[9] - 17
             PC += 1
         elif(line[0:8] == "00011110"):
             output_file.write("j Mod	            # Will loop back to Mod to get remainder  \n")
+            #PC= What ever "MOD" is
         elif(line[0:8] == "00100001"):
             #output_file.write("sw $9, R	            #Stores the remainder value into R\n")
             Memory[2] = Reg[9] #Memory[2] is R (result)
@@ -203,6 +213,8 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             PC += 1
         elif(line[0:8] == "00110101"):
             output_file.write("beq  $7, $8, Save	# Once $7 equals 16, go to next array index\n")
+            if( Reg[7] = 16):
+                #PC = what ever "Save" is
         elif(line[0:8] == "00110110"):
             #output_file.write("addi $7, $7, 1	# Increment $7 by 1\n")
             Reg[7] = Reg[7]+ 1
@@ -216,7 +228,8 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             Reg[3] = Reg[3]+ Reg[2]
             PC += 1
         elif(line[0:8] == "00111100"):
-            output_file.write("srl  $1, $1, 1	# $1 = $1 >> 1, reduces it by 1 bit till = 0\n")
+            #output_file.write("srl  $1, $1, 1	# $1 = $1 >> 1, reduces it by 1 bit till = 0\n")
+            Reg[1] = Reg[1]
         elif(line[0:8] == "00111111"):
             output_file.write("j    Compare	    # now Compare with old values\n")
         elif(line[0:8] == "01000001"):
@@ -227,12 +240,17 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             output_file.write("slt  $6, $1, $3	# $6 = 1 if( $1(S) < $3), else $6 = 0\n")
         elif(line[0:8] == "01000111"):
             output_file.write("beq  $6, $0, Check1	# if (s>= $3 then $6 = 0) => if ($6 = 0) go to check 1, else continue\n")
+            
         elif(line[0:8] == "01001000"):
             #output_file.write("add  $1, $0, $3	# $1 = $3, $1 will now take highest value\n")
             Reg[1] = Reg[0]+ Reg[3]
+            PC += 1
+            
         elif(line[0:8] == "01001011"):
             #output_file.write("addi $2, $0, 1	# $2(T) will be set to one since it's first highest value\n")
             Reg[2] = Reg[0]+ 1
+            PC += 1
+            
         elif(line[0:8] == "01001101"):
             output_file.write("sw   $1, 0x2010($0)	# mem(0x2010) = $1 = S\n")
         elif(line[0:8] == "01001110"):
