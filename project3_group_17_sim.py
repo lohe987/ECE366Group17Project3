@@ -122,6 +122,8 @@ def simulate(I,Memory,Nlines,program):
       #  print(fetch)
     if (program == 1):
         max = 31 #When it will stop running the program for P1
+    elif(program == 0):
+        max = 10
     else:
         max = 32 # When it will stop running the program for P2
     while(PC < max):  # Based on the program length its the max pc can run
@@ -245,7 +247,7 @@ def simulate(I,Memory,Nlines,program):
             PC += 1
         elif(line[0:8] == "00101101"):
             #output_file.write("lw   $2, 0x2020($5)	# $2 = mem(0x2020 + $5)\n")
-            Reg[2] = int(Memory[mem +Reg[5]])
+            Reg[2] = int(Memory[Mem +Reg[5]])
             PC +=1
             
         elif(line[0:8] == "00101110"):
@@ -369,18 +371,20 @@ def simulate(I,Memory,Nlines,program):
             #output_file.write("Instructions not supported/n")
             print("instruction not supported")
         DIC+=1
-        print("PC value: ", PC)
+        #print("PC value: ", PC)
         #print("Instruction[", PC, "]: ", I[PC-1])
     
     print("******** Simulation finished *********")
     print("Dynamic Instr Count: ",DIC)
-    print("Registers R0-R10: ",Reg)   
+    print("Registers R0-R10: ",Reg) 
+    print(" data Memory: Mem[0] to Mem[5]: \n", Memory[0],Memory[1], Memory[2],Memory[3], Memory[4],Memory[5] )
         
      
      
 def main():
     data_file = open("project3_group_17_p1_bin.txt" ,"r")
     data_file2 = open("project3_group_17_p2_bin.txt", "r")
+    data_file0 = open("project3_group_17_p0_bin.txt", "r")
     data_fileA = open("patternA.txt", "r")
     data_fileB = open("patternB.txt", "r")
     data_fileC = open("patternC.txt", "r")
@@ -391,16 +395,18 @@ def main():
     Nlines = 0   #How may instrs total in input.txt for P1
     Mlines = 0   # How many instrs total in input.txt for P2
     MemLines = 0
+    zlines = 0
+    Instructions0 = []
     Instructions = [] #all instructions will be stored here for P1
     Instructions2 = [] #all instructions will be stored here for P2
     Memory = [] # where the data is being stored
     
-    print( " ECE 366 Group 8")
+    print( " ECE 366 Group 17")
     print( " 1 = simulator")
     print( " 2 = disassembler")
     print( " 3 = assembler")
 
-    mode= int(input( "Please enter the mode of Program: "))
+    mode= input( "Please enter the mode of Program: ")
     print( "Mode selected: ", mode)
     #modedis= int(input( "Please enter the which program 1 or 2:  "))
     #print( "Mode selected: ", end=" ")
@@ -451,6 +457,12 @@ def main():
             
             
     
+    for line in data_file0: # Read in data  from P2
+        if(line== "\n" or line[0] =='#'):
+            continue
+        Instructions0.append(line)
+        zlines+=1
+        
     for line in data_file: # Read in data P1
         if(line== "\n" or line[0] =='#'):
             continue
@@ -466,22 +478,26 @@ def main():
             
         
                 
-    if(mode == 1): #Check whether to use disassembler, assembler or simulator
+    if(mode == '1'): #Check whether to use disassembler, assembler or simulator
+        simulate(Instructions0,Memory,zlines,0)
+        print("simulation complete for Program 0 \n")
+        # needs memory information printed here
+        print("**************************************")
         simulate(Instructions,Memory,Nlines,1)
         print("simulation complete for Program 1 \n")
         # needs memory information printed here
         print("**************************************")
-        simulate(Instructions,Memory,Mlines,2)
+        simulate(Instructions2,Memory,Mlines,2)
         print("simulation complete for Program 2 \n")
         # needs memory information printed here
-    elif(mode== 2):
+    elif(mode== '2'):
         disassembler(Instructions,Nlines,1)
         print("disassembler is done for P1")
         print("**************************************")
         disassembler(Instructions2,Mlines,2)
         print("disassembler is done for P2")
         print("**************************************")
-    elif(mode== 3):
+    elif(mode== '3'):
     
         #assembler(Instructions,Nlines,1)
         #assembler(Instructions2,Mlines,2)
