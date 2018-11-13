@@ -124,64 +124,64 @@ def simulate(Instructions,Memory,Nlines,Memlines):
             Reg[7] = int(Memory[0])
             Reg[8] = int(Memory[1]) # loads Q even thou its fixed at 17
             PC += 1             
-        elif(line[0:8] == "00000011"):
+    elif(line[0:8] == "00000011"):
             #output_file.write("add $9, $0, 1       #$9 = 1\n")
             Reg[9] = Reg[0] + 1
             PC += 1
-        elif(line[0:8] == "00000101"):
+    elif(line[0:8] == "00000101"):
             #output_file.write("addi $10, $0, $0    # $10 =0 = counter N =exponent\n")
             Reg[10] = 0
             PC += 1
-        elif(line[0:8] == "00000110"):
+    elif(line[0:8] == "00000110"):
             #output_file.write("andi $10, $7, 1     # $10-$7 and 1(0/1) \n")
             Reg[10] = Reg[7] + 1
             PC += 1
-        elif(line[0:8] == "00001001"):
+    elif(line[0:8] == "00001001"):
             output_file.write("srl $7, $7, 1       # $7 >>1 \n")
             Reg[7] = Reg[7] >> = 1
            
-        elif(line[0:8] == "00001010"):
+    elif(line[0:8] == "00001010"):
             output_file.write("beq $10, $0, Mult2  # if zero go to Mult2")
-        elif(line[0:8] == "00001100"):
+    elif(line[0:8] == "00001100"):
             #output_file.write("add $10, $9, $9     # temp $10 = $9 + $9 + $10 =2\n")
             Reg[10] = Reg[9] +Reg[9]
             PC += 1
-        elif(line[0:8] == "00001111"):
+    elif(line[0:8] == "00001111"):
             #output_file.write("add $9, $9, $9      # $9 = $9 + $9 =$9 =2 $0\n")
             Reg[9] = Reg[9]+ Reg[9]
             PC += 1
-        elif(line[0:8] == "00010001"):
+    elif(line[0:8] == "00010001"):
             #output_file.write("add $9, $10, $9     # $9 = $10 +$9 = $9 = 6\n")
             Reg[9] = Reg[10]+ Reg[9]
             PC += 1
-        elif(line[0:8] == "00010010"):
+    elif(line[0:8] == "00010010"):
             output_file.write("beq $10, $0, Mult4  # $if zero, go Mult2, check to multiply next bit by 4, else multiply by 2\n")
-        elif(line[0:8] == "00010100"):
+    elif(line[0:8] == "00010100"):
             output_file.write("beq $10, $0, Mult16  # $if zero, go Mult2, check to multiply next bit by 16, else MOD")
-        elif(line[0:8] == "00010111"):
+    elif(line[0:8] == "00010111"):
             output_file.write("beq $10, $0, Mod     # $if zero, go Mult2, check yo multiply next bit by 4, else multiply by 2\n")
-        elif(line[0:8] == "00011000"):
+    elif(line[0:8] == "00011000"):
             #output_file.write("slti $10, $9, 17     # if $9< $8, $10 = 1, else $10 = 0, these next 3 lines will subract by 17 until the is only the remainder\n")
-            if( Reg[9] < Reg[8]):
-                Reg[10] = 1
-            else:
-                Reg[10]= 0
+        if( Reg[9] < Reg[8]):
+            Reg[10] = 1
+        else:
+            Reg[10]= 0
             PC += 1
                 
-        elif(line[0:8] == "00011011"):
-            output_file.write("bne $10, $0, End     # if($10 = 1) Save2, else cont\n")
-            if( Reg[10] != 1):
+    elif(line[0:8] == "00011011"):
+        output_file.write("bne $10, $0, End     # if($10 = 1) Save2, else cont\n")
+        if( Reg[10] != 1):
                 #PC = What ever "Save2"s 
-        elif(line[0:8] == "00011101"):
-            output_file.write("subi  $9, $9, 17 	# $9 = $9 -17 = 36 -17 = 19\n")
-            Reg[9] = Reg[9] - 17
-            PC += 1
-        elif(line[0:8] == "00011110"):
+    elif(line[0:8] == "00011101"):
+        output_file.write("subi  $9, $9, 17 	# $9 = $9 -17 = 36 -17 = 19\n")
+        Reg[9] = Reg[9] - 17
+        PC += 1
+    elif(line[0:8] == "00011110"):
             output_file.write("j Mod	            # Will loop back to Mod to get remainder  \n")
             #PC= What ever "MOD" is
-        elif(line[0:8] == "00100001"):
+    elif(line[0:8] == "00100001"):
             #output_file.write("sw $9, R	            #Stores the remainder value into R\n")
-            Memory[2] = Reg[9] #Memory[2] is R (result)
+    #        Memory[2] = Reg[9] #Memory[2] is R (result) !!Memory is a string not a int
             PC += 1
         elif(line[0:8] == "00100010"):
             #output_file.write("addi $5  $0, 0	    # Counter i \n")
