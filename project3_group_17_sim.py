@@ -100,6 +100,10 @@ def disassembler(I, lines, mode):
             output_file.write("beq  $1, $3, Check2	# if ($1 = $3) go to check 2, else continue\n")
         elif(line[0:8] == "01010101"):
             output_file.write("addi $2, $2, 1	# Increment 2(T) by 1 since matching count was found\n")
+        elif(line[0:8] == "01010110"):
+            output_file.write("slt $10, $9, $8 \n")
+        elif(line[0:8] == "01011001"):
+            output_file.write("sub $9, $9, $8 \n")
         else:
             output_file.write("Instructions not supported/n")
         
@@ -262,6 +266,10 @@ def simulate(Instructions,Memory,Nlines,Memlines):
         elif(line[0:8] == "01010101"):
             #output_file.write("addi $2, $2, 1	# Increment 2(T) by 1 since matching count was found\n")
             Reg[2] = Reg[2]+ 1
+         elif(line[0:8] == "01010110"):
+            output_file.write("slt $10, $9, $8 \n")
+        elif(line[0:8] == "01011001"):
+            output_file.write("sub $9, $9, $8 \n")
         else:
             output_file.write("Instructions not supported/n")
     
